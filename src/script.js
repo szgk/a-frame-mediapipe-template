@@ -1,5 +1,5 @@
-import {Hands} from '@mediapipe/hands'
-import {Camera} from '@mediapipe/camera_utils'
+// import {Hands} from '@mediapipe/hands'
+// import {Camera} from '@mediapipe/camera_utils'
 
 const state = {
     handSphers: []
@@ -21,6 +21,7 @@ const getHandsSpheres = (landmarks) => {
             position: { x: landmark.x, y: landmark.y, z: landmark.z },
             radius: 0.04,
             color: '#000',
+            ['static-body']: '',
         })
         state.handSphers.push(sphere)
     })
@@ -41,11 +42,10 @@ function onResults(results) {
             }
 
             state.handSphers.forEach((sphere, i) => {
-
                 sphere.setAttribute('position', {
                     x: landmarks[i].x * -3 + 1,
-                    y: landmarks[i].y * -3 + 2,
-                    z: landmarks[i].z * -1 - 3,
+                    y: landmarks[i].y * -2.5 + 2,
+                    z: landmarks[i].z * 8 - 2,
                 })
             })
         }
