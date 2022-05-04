@@ -1,3 +1,6 @@
+import {Hands} from '@mediapipe/hands'
+import {Camera} from '@mediapipe/camera_utils'
+
 const state = {
     handSphers: []
 }
