@@ -1,0 +1,21 @@
+{
+  "name": "a-frame-practice",
+  "version": "0.0.0",
+  "description": "template of a-frame and mediapipe project",
+  "main": "index.html",
+  "repository": "git@github.com:szgk/a-frame-mediapipe-template.git",
+  "author": "szgk <szgk123@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 8080"
+  },
+  "devDependencies": {
+    "vite": "^2.9.7"
+  },
+  "dependencies": {
+    "@mediapipe/camera_utils": "^0.3.1640029074",
+    "@mediapipe/hands": "^0.4.1646424915"
+  }
+}
