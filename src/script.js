@@ -7,9 +7,8 @@ const state = {
     canvasElement: null,
     cameraElement: null,
     canvasCtx: null,
+    isMobile: false,
 }
-
-
 
 const createSphere = (attributes) => {
     const sphere = document.createElement('a-sphere')
@@ -26,7 +25,8 @@ const getHandsSpheres = (landmarks) => {
             position: { x: landmark.x, y: landmark.y, z: landmark.z },
             radius: 0.04,
             color: '#000',
-            ['static-body']: '',
+            ['ammo-body']: 'type: kinematic',
+            ['ammo-shape']: 'type: sphere'
         })
         state.handSphers.push(sphere)
     })
@@ -43,7 +43,7 @@ const onResults = (results) => {
             if (state.handSphers.length <= 0) {
                 getHandsSpheres(landmarks)
             }
-
+            
             state.handSphers.forEach((sphere, i) => {
                 sphere.setAttribute('position', {
                     x: landmarks[i].x * -3 + 1,
@@ -58,11 +58,13 @@ const onResults = (results) => {
 
 const init = () => {
     state.sceneElement = document.querySelector('a-scene')
-    state.canvasElement = document.getElementsByClassName('output_canvas')[0]
-    state.cameraElement = document.querySelector('#second-camera');
+    state.canvasElement = document.querySelector('#output-canvas')
+    state.cameraElement = document.querySelector('#camera')
     state.canvasCtx = state.canvasElement.getContext('2d')
+    
+    state.isMobile = AFRAME.utils.device.isMobile ()
 
-    const videoElement = document.getElementsByClassName('input_video')[0]
+    const videoElement = document.querySelector('#input-video')
 
     const hands = new Hands({
         locateFile: (file) => {
