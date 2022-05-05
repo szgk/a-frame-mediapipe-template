@@ -2,16 +2,21 @@
 // import {Camera} from '@mediapipe/camera_utils'
 
 const state = {
-    handSphers: []
+    handSphers: [],
+    sceneElement: null,
+    canvasElement: null,
+    cameraElement: null,
+    canvasCtx: null,
 }
 
+
+
 const createSphere = (attributes) => {
-    const sceneEl = document.querySelector('a-scene')
     const sphere = document.createElement('a-sphere')
     for (const attribute in attributes) {
         sphere.setAttribute(attribute, attributes[attribute])
     }
-    sceneEl.appendChild(sphere)
+    state.sceneElement.appendChild(sphere)
     return sphere
 }
 
@@ -27,13 +32,11 @@ const getHandsSpheres = (landmarks) => {
     })
 }
 
-function onResults(results) {
-    const canvasElement = document.getElementsByClassName('output_canvas')[0]
-    const canvasCtx = canvasElement.getContext('2d')
-    canvasCtx.save()
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
-    canvasCtx.drawImage(
-        results.image, 0, 0, canvasElement.width, canvasElement.height)
+const onResults = (results) => {
+    state.canvasCtx.save()
+    state.canvasCtx.clearRect(0, 0, state.canvasElement.width, state.canvasElement.height)
+    state.canvasCtx.drawImage(results.image, 0, 0, state.canvasElement.width, state.canvasElement.height)
+
     if (results.multiHandLandmarks) {
         for (const landmarks of results.multiHandLandmarks) {
 
@@ -50,10 +53,15 @@ function onResults(results) {
             })
         }
     }
-    canvasCtx.restore()
+    state.canvasCtx.restore()
 }
 
 const init = () => {
+    state.sceneElement = document.querySelector('a-scene')
+    state.canvasElement = document.getElementsByClassName('output_canvas')[0]
+    state.cameraElement = document.querySelector('#second-camera');
+    state.canvasCtx = state.canvasElement.getContext('2d')
+
     const videoElement = document.getElementsByClassName('input_video')[0]
 
     const hands = new Hands({
