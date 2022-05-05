@@ -2,16 +2,20 @@
 // import {Camera} from '@mediapipe/camera_utils'
 
 const state = {
-    handSphers: []
+    handSphers: [],
+    sceneElement: null,
+    canvasElement: null,
+    cameraElement: null,
+    canvasCtx: null,
+    isMobile: false,
 }
 
 const createSphere = (attributes) => {
-    const sceneEl = document.querySelector('a-scene')
     const sphere = document.createElement('a-sphere')
     for (const attribute in attributes) {
         sphere.setAttribute(attribute, attributes[attribute])
     }
-    sceneEl.appendChild(sphere)
+    state.sceneElement.appendChild(sphere)
     return sphere
 }
 
@@ -21,26 +25,25 @@ const getHandsSpheres = (landmarks) => {
             position: { x: landmark.x, y: landmark.y, z: landmark.z },
             radius: 0.04,
             color: '#000',
-            ['static-body']: '',
+            ['ammo-body']: 'type: kinematic',
+            ['ammo-shape']: 'type: sphere'
         })
         state.handSphers.push(sphere)
     })
 }
 
-function onResults(results) {
-    const canvasElement = document.getElementsByClassName('output_canvas')[0]
-    const canvasCtx = canvasElement.getContext('2d')
-    canvasCtx.save()
-    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height)
-    canvasCtx.drawImage(
-        results.image, 0, 0, canvasElement.width, canvasElement.height)
+const onResults = (results) => {
+    state.canvasCtx.save()
+    state.canvasCtx.clearRect(0, 0, state.canvasElement.width, state.canvasElement.height)
+    state.canvasCtx.drawImage(results.image, 0, 0, state.canvasElement.width, state.canvasElement.height)
+
     if (results.multiHandLandmarks) {
         for (const landmarks of results.multiHandLandmarks) {
 
             if (state.handSphers.length <= 0) {
                 getHandsSpheres(landmarks)
             }
-
+            
             state.handSphers.forEach((sphere, i) => {
                 sphere.setAttribute('position', {
                     x: landmarks[i].x * -3 + 1,
@@ -50,11 +53,18 @@ function onResults(results) {
             })
         }
     }
-    canvasCtx.restore()
+    state.canvasCtx.restore()
 }
 
 const init = () => {
-    const videoElement = document.getElementsByClassName('input_video')[0]
+    state.sceneElement = document.querySelector('a-scene')
+    state.canvasElement = document.querySelector('#output-canvas')
+    state.cameraElement = document.querySelector('#camera')
+    state.canvasCtx = state.canvasElement.getContext('2d')
+    
+    state.isMobile = AFRAME.utils.device.isMobile ()
+
+    const videoElement = document.querySelector('#input-video')
 
     const hands = new Hands({
         locateFile: (file) => {
