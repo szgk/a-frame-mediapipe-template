@@ -2,18 +2,16 @@
 // import {Camera} from '@mediapipe/camera_utils'
 
 const state = {
-    handSphers: [],
+    handSpheres: [],
     sceneElement: null,
-    canvasElement: null,
     cameraElement: null,
-    canvasCtx: null,
     isMobile: false,
 }
 
 const createSphere = (attributes) => {
     const sphere = document.createElement('a-sphere')
-    for (const attribute in attributes) {
-        sphere.setAttribute(attribute, attributes[attribute])
+    for (const key in attributes) {
+        sphere.setAttribute(key, attributes[key])
     }
     state.sceneElement.appendChild(sphere)
     return sphere
@@ -28,23 +26,19 @@ const getHandsSpheres = (landmarks) => {
             ['ammo-body']: 'type: kinematic',
             ['ammo-shape']: 'type: sphere'
         })
-        state.handSphers.push(sphere)
+        state.handSpheres.push(sphere)
     })
 }
 
 const onResults = (results) => {
-    state.canvasCtx.save()
-    state.canvasCtx.clearRect(0, 0, state.canvasElement.width, state.canvasElement.height)
-    state.canvasCtx.drawImage(results.image, 0, 0, state.canvasElement.width, state.canvasElement.height)
-
     if (results.multiHandLandmarks) {
         for (const landmarks of results.multiHandLandmarks) {
 
-            if (state.handSphers.length <= 0) {
+            if (state.handSpheres.length <= 0) {
                 getHandsSpheres(landmarks)
             }
             
-            state.handSphers.forEach((sphere, i) => {
+            state.handSpheres.forEach((sphere, i) => {
                 sphere.setAttribute('position', {
                     x: landmarks[i].x * -3 + 1,
                     y: landmarks[i].y * -2.5 + 2,
@@ -53,14 +47,11 @@ const onResults = (results) => {
             })
         }
     }
-    state.canvasCtx.restore()
 }
 
 const init = () => {
     state.sceneElement = document.querySelector('a-scene')
-    state.canvasElement = document.querySelector('#output-canvas')
     state.cameraElement = document.querySelector('#camera')
-    state.canvasCtx = state.canvasElement.getContext('2d')
     
     state.isMobile = AFRAME.utils.device.isMobile ()
 
